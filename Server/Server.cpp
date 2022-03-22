@@ -2,7 +2,10 @@
 #include <thread>
 
 #include <sys/time.h>
-#include "socket.h"
+#include "Socket.h"
+
+using namespace std;
+using namespace stdsock;
 
 
 int main(int argc, char *argv[]){
