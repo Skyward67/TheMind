@@ -1,3 +1,7 @@
+/**
+link to Microsoft documentation : https://docs.microsoft.com/en-us/dotnet/framework/network-programming/asynchronous-client-socket-example
+ */
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -37,6 +41,34 @@ public class AsynchronousClient
     // The response from the remote device.  
     private static String response = String.Empty;
 
+    private Socket client;
+
+    public AsynchronousClient(string _ip, int _port)
+    {
+        startClient(_ip, _port);
+    }
+
+    public void startClient(string _ip, int _port)
+    {
+        port = _port;
+        try
+        {
+            IPAddress ipAddress = IPAddress.Parse(_ip);
+            IPEndPoint remoteEP = new IPEndPoint(ipAddress, port);
+
+            this.client = new Socket(ipAddress.AddressFamily,
+                SocketType.Stream, ProtocolType.Tcp);
+
+            client.BeginConnect(remoteEP,
+                new AsyncCallback(ConnectCallback), client);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.ToString());
+        }
+    }
+
+    /*
     public static void StartClient(string _ip, int _port)
     {
         port = _port;
@@ -83,6 +115,20 @@ public class AsynchronousClient
             Console.WriteLine(e.ToString());
         }
     }
+    */
+
+    public void deleteClient()
+    {
+        try
+        {
+            client.Shutdown(SocketShutdown.Both);
+            client.Close();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.ToString());
+        }
+    }
 
     private static void ConnectCallback(IAsyncResult ar)
     {
@@ -106,7 +152,7 @@ public class AsynchronousClient
         }
     }
 
-    private static void Receive(Socket client)
+    public void receive()
     {
         try
         {
@@ -198,16 +244,32 @@ public class ServerConnection : MonoBehaviour
 
     public String ipAddress = "0.0.0.0";
     public int port = 3490;
-
+    AsynchronousClient client;
 
     // Start is called before the first frame update
     void Start()
     {
+        client = new AsynchronousClient(ipAddress, port);
     }
 
-    public void joinConnection()
+    private void Update()
     {
-        AsynchronousClient.StartClient(ipAddress, port);
+        client.receive();
     }
+
+    private void OnApplicationQuit()
+    {
+        client.deleteClient();   
+    }
+
+    public void joinChannel()
+    {
+
+    }
+
+    public void createChannel()
+    {
+
+    }    
 
 }
