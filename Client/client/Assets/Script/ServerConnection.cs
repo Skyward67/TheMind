@@ -203,11 +203,22 @@ public class ServerConnection : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        serverConnection();
     }
 
-    public void joinConnection()
+    public void serverConnection()
     {
         AsynchronousClient.StartClient(ipAddress, port);
+    }
+
+    public void joinChannel()
+    {
+
+    }
+
+    public void createChannel()
+    {
+
     }
 
 }
