@@ -7,6 +7,7 @@
 using namespace std;
 using namespace stdsock;
 
+void lobby(int client, int i);
 
 int main(int argc, char *argv[]){
 
@@ -26,25 +27,17 @@ int main(int argc, char *argv[]){
     }
 
     cout << "Waiting clients on port " << port << " ..." << endl;
-
-    // accepting connexion
-    // and preparing communication points
-    StreamSocket *client1=server->accept();
-    cout << "connexion client1\n";
-    StreamSocket *client2=server->accept();
-    cout << "connexion client2\n";
-
-    // waiting end of communication
-    printf("Deconnexion client1\n");
-    delete(client1);
-
-    printf("Deconnexion client2\n");
-    delete(client2);
-
-    // closing connexion point
-    delete server;
-    cout << "stop\n";
+    int i = 0;
+    while(1){
+        StreamSocket *client1=server->accept();
+        cout << "connexion client " << i <<"\n";
+        std::thread t(lobby, client1->getSockfd(), i);
+        t.detach();
+        i++;
+    }
     return 0;
+}
 
-    
+void lobby(int client, int i){
+    cout<<"client " << i << " " << client << " joined lobby \n";
 }
