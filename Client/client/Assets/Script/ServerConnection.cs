@@ -18,7 +18,7 @@ public class StateObject
     // Client socket.  
     public Socket workSocket = null;
     // Size of receive buffer.  
-    public const int BufferSize = 256;
+    public const int BufferSize = 5;
     // Receive buffer.  
     public byte[] buffer = new byte[BufferSize];
     // Received data string.  
@@ -39,7 +39,7 @@ public class AsynchronousClient
         new ManualResetEvent(false);
 
     // The response from the remote device.  
-    private static String response = String.Empty;
+    private String response = String.Empty;
 
     private Socket client;
 
@@ -170,14 +170,15 @@ public class AsynchronousClient
         }
     }
 
-    private static void ReceiveCallback(IAsyncResult ar)
+    private void ReceiveCallback(IAsyncResult ar)
     {
         try
         {
+            Debug.Log("Callback");
             // Retrieve the state object and the client socket
             // from the asynchronous state object.  
             StateObject state = (StateObject)ar.AsyncState;
-            Socket client = state.workSocket;
+            //Socket client = state.workSocket;
 
             // Read data from the remote device.  
             int bytesRead = client.EndReceive(ar);
@@ -186,13 +187,29 @@ public class AsynchronousClient
             {
                 // There might be more data, so store the data received so far.  
                 state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
-
+                Debug.Log("byte read " + state.sb.ToString());
                 // Get the rest of the data.  
-                client.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-                    new AsyncCallback(ReceiveCallback), state);
+                if (bytesRead < 5)
+                {
+                    Debug.Log("went into else");
+                    // All the data has arrived; put it in response.  
+                    if (state.sb.Length > 1)
+                    {
+                        response = state.sb.ToString();
+                    }
+                    // Signal that all bytes have been received.  
+                    receiveDone.Set();
+                }
+                else
+                {
+                    client.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
+                        new AsyncCallback(ReceiveCallback), state);
+                    
+                }
             }
             else
             {
+                Debug.Log("went into else");
                 // All the data has arrived; put it in response.  
                 if (state.sb.Length > 1)
                 {
@@ -206,9 +223,11 @@ public class AsynchronousClient
         {
             Console.WriteLine(e.ToString());
         }
+        
+        
     }
 
-    private static void Send(Socket client, String data)
+    public void send(String data)
     {
         // Convert the string data to byte data using ASCII encoding.  
         byte[] byteData = Encoding.ASCII.GetBytes(data);
@@ -237,6 +256,11 @@ public class AsynchronousClient
             Console.WriteLine(e.ToString());
         }
     }
+
+    public String getResponse()
+    {
+        return response;
+    }
 }
 
 public class ServerConnection : MonoBehaviour
@@ -250,11 +274,16 @@ public class ServerConnection : MonoBehaviour
     void Start()
     {
         client = new AsynchronousClient(ipAddress, port);
+        //client.send("aojfnsfi");
     }
 
     private void Update()
     {
         client.receive();
+        if (client.getResponse() != "")
+        {
+            Debug.Log(client.getResponse());
+        }
     }
 
     private void OnApplicationQuit()
