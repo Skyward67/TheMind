@@ -1,5 +1,9 @@
 #include <iostream>
 #include <thread>
+#include <string>
+#include <vector>
+#include <sstream>
+#include <fstream>
 
 #include <sys/time.h>
 #include "Socket.h"
@@ -8,6 +12,7 @@ using namespace std;
 using namespace stdsock;
 
 void lobby(StreamSocket* client, int i);
+void createChannel(int nb_player, string name);
 
 int main(int argc, char *argv[]){
 
@@ -46,4 +51,56 @@ void lobby(StreamSocket* client, int i){
     string message = "mon message";
     client->send(message);
     cout<<"asdsqfq\n";
+}
+
+vector<string> split(string txt, char separator = ';'){
+    vector<string> output;
+    stringstream streamData(txt);
+
+    string val;
+
+    while(getline(streamData, val, separator)){
+        output.push_back(val);
+    }
+
+    return output;
+}
+
+void update(StreamSocket* client){
+    string msg;
+    vector<string> msgSplit;
+    while(true){
+        client->read(msg);
+
+        if (msg != ""){
+            msgSplit = split(msg);
+            if (msgSplit.size() > 2){
+                if (msgSplit.at(0) == "CRTE"){
+                    createChannel(stoi(msgSplit.at(1)), msgSplit.at(2));
+                }
+                else if (msg == "JOIN"){
+                    
+                }
+            }
+        }
+
+        msg = "";
+    }
+}
+
+void createChannel(int nb_player, string name){
+    fstream file;
+
+    file.open(name + ".txt",ios::out);
+
+    if (!file){
+        cout << "error in creating channel " << name << " : file not opened.";
+        return ;
+    }
+
+    file << name << endl;
+    file << nb_player << endl;
+    file << "end";
+
+    file.close();
 }
