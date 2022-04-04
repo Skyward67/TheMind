@@ -98,6 +98,7 @@ void update(StreamSocket* client){
                     }
                     client->send(message + "\n");
                 }
+                client->send("OK");
             }
         }
 
