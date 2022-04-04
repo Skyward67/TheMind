@@ -38,6 +38,7 @@ class Socket
 protected:
     int sockfd; //!< file descriptor for socket
     struct sockaddr_in address; //!< POSIX address struct
+    std::string channelName; 
 public:
     /**
      * @brief Socket, construct a socket on
@@ -110,6 +111,14 @@ public:
      * @brief close the socket, by closing the file descriptor if opened
      */
     virtual void close();
+
+    virtual void setChannelName(std::string _name){
+        channelName = _name;
+    }
+
+    virtual std::string getChannelName(){
+        return channelName;
+    }
 
 };
 

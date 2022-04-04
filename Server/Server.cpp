@@ -15,8 +15,8 @@ using namespace std;
 using namespace stdsock;
 
 void lobby(StreamSocket* client, int i);
-void createChannel(int nb_player, string name, StreamSocket* client);
-void joinChannel(string channelName, StreamSocket* client);
+string createChannel(int nb_player, string name, StreamSocket* client);
+string joinChannel(string channelName, StreamSocket* client);
 void update(StreamSocket* client);
 vector<string> getChannels();
 
@@ -84,12 +84,11 @@ void update(StreamSocket* client){
             msgSplit = split(msg);
             if (msgSplit.size() > 2){
                 if (msgSplit.at(0) == "CRTE"){
-                    createChannel(stoi(msgSplit.at(1)), msgSplit.at(2), client);
+                    client->send(createChannel(stoi(msgSplit.at(1)), msgSplit.at(2), client));
                 }
                 else if (msgSplit.at(0) == "JOIN"){
-                    joinChannel(msgSplit.at(1), client);
+                    client->send(joinChannel(msgSplit.at(1), client));
                 }
-                client->send("OK");
             }
             else if (msgSplit.size() == 2){
                 if (msgSplit.at(0) == "JOIN"){
@@ -106,36 +105,64 @@ void update(StreamSocket* client){
     }
 }
 
-void createChannel(int nb_player, string name, StreamSocket* client){
+string createChannel(int nb_player, string name, StreamSocket* client){
     fstream file;
 
     file.open("Channels/" + name + ".txt",ios::out);
 
     if (!file){
         cout << "error in creating channel " << name << " : file not opened.";
-        return ;
+        return "ERRO;1;\n";
     }
 
-    file << name << endl;
+    client->setChannelName(name);
+
     file << nb_player << endl;
     file << client << endl;
 
     file.close();
+
+    return "OK;\n";
 }
 
-void joinChannel(string channelName, StreamSocket* client){
+string joinChannel(string channelName, StreamSocket* client){
+
+    // vérification qu'il reste de la place dans le channel
+    ifstream fluxRead("Channels/" + channelName + ".txt");
+    if (fluxRead){
+        int nbClientAccept = 0, nbClientCurrent = 0;
+        string ligne;
+        getline(fluxRead, ligne);
+        nbClientAccept = stoi(ligne);
+        while(getline(fluxRead, ligne)){
+            if (ligne.compare("") != 0)
+                nbClientCurrent++;
+        }
+        if(nbClientAccept == nbClientCurrent){
+            return "ERRO;4;\n"; //no client more
+        }
+    }
+    else{
+        return "ERRO;1;\n";
+    }
+
+    // ajout du client dans le channel
     fstream file;
 
     file.open("Channels/" + channelName + ".txt",ios::app);
 
     if (!file){
         cout << "error in joining channel " << channelName << " : file doesn't exist.";
-        return ;
+        return "ERRO;1;\n";
     }
 
+    client->setChannelName(channelName);
+    
     file << client << endl;
 
     file.close();
+
+    return "OK;\n";
 }
 
 vector<string> getChannels(){
