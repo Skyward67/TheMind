@@ -48,6 +48,11 @@ public class AsynchronousClient
         startClient(_ip, _port);
     }
 
+    public String getResponse()
+    {
+        return response;
+    }
+
     public void startClient(string _ip, int _port)
     {
         port = _port;
@@ -116,6 +121,7 @@ public class AsynchronousClient
         }
     }
     */
+    
 
     public void deleteClient()
     {
@@ -208,7 +214,7 @@ public class AsynchronousClient
         }
     }
 
-    private static void Send(Socket client, String data)
+    public void send(String data)
     {
         // Convert the string data to byte data using ASCII encoding.  
         byte[] byteData = Encoding.ASCII.GetBytes(data);
