@@ -21,7 +21,7 @@ public class StateObject
     // Client socket.  
     public Socket workSocket = null;
     // Size of receive buffer.  
-    public const int BufferSize = 5;
+    public const int BufferSize = 1024;
     // Receive buffer.  
     public byte[] buffer = new byte[BufferSize];
     // Received data string.  
@@ -314,16 +314,22 @@ public class ServerConnection : MonoBehaviour
         string toSend = "JOIN;\n";
         client.send(toSend);
         bool isResponse = false;
-        while (!isResponse)
+        Debug.Log(client.getResponse().ToString());
+        /*while (!isResponse)
         {
-            if (client.getResponse() == "OK")
+            if (client.getResponse().Split(';')[0] == "LIST")
             {
-                Debug.Log(client.getResponse());
                 isResponse = true;
+                if (client.getResponse().Split(';').Length > 2)
+                {
+                    for (int i = 1; i < client.getResponse().Split(';').Length; i++)
+                    {
+                        partyList.options.Add(new Dropdown.OptionData(client.getResponse().Split(';')[i]));
+                    }
+                }
                 client.setResponse("");
-                
             } 
-        }
+        }*/
     }
 
     public void createChannel()
@@ -335,13 +341,9 @@ public class ServerConnection : MonoBehaviour
         bool isResponse = false;
         while (!isResponse)
         {
-            if (client.getResponse().Split(';')[0] == "LIST")
+            if (client.getResponse() == "OK")
             {
                 isResponse = true;
-                for (int i = 1; i < client.getResponse().Split(';').Length; i++)
-                {
-                    partyList.options.Add(new Dropdown.OptionData(client.getResponse().Split(';')[i]));
-                }
                 client.setResponse("");
                 //TODO start waiting room
             } 
