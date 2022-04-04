@@ -272,7 +272,7 @@ public class ServerConnection : MonoBehaviour
 
     public String ipAddress = "0.0.0.0";
     public int port = 3490;
-    AsynchronousClient client;
+    public AsynchronousClient client;
 
     // Start is called before the first frame update
     void Start()
