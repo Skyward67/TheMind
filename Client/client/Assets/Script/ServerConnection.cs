@@ -48,11 +48,6 @@ public class AsynchronousClient
         startClient(_ip, _port);
     }
 
-    public String getResponse()
-    {
-        return response;
-    }
-
     public void startClient(string _ip, int _port)
     {
         port = _port;
@@ -180,7 +175,7 @@ public class AsynchronousClient
     {
         try
         {
-            Debug.Log("Callback");
+            
             // Retrieve the state object and the client socket
             // from the asynchronous state object.  
             StateObject state = (StateObject)ar.AsyncState;
@@ -193,11 +188,10 @@ public class AsynchronousClient
             {
                 // There might be more data, so store the data received so far.  
                 state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
-                Debug.Log("byte read " + state.sb.ToString());
+                
                 // Get the rest of the data.  
                 if (bytesRead < 5)
                 {
-                    Debug.Log("went into else");
                     // All the data has arrived; put it in response.  
                     if (state.sb.Length > 1)
                     {
@@ -215,7 +209,6 @@ public class AsynchronousClient
             }
             else
             {
-                Debug.Log("went into else");
                 // All the data has arrived; put it in response.  
                 if (state.sb.Length > 1)
                 {
@@ -267,6 +260,11 @@ public class AsynchronousClient
     {
         return response;
     }
+
+    public void setResponse(String _response)
+    {
+        response = _response;
+    }
 }
 
 public class ServerConnection : MonoBehaviour
@@ -290,6 +288,7 @@ public class ServerConnection : MonoBehaviour
         {
             Debug.Log(client.getResponse());
         }
+        client.setResponse("");
     }
 
     private void OnApplicationQuit()

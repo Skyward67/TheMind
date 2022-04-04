@@ -43,7 +43,7 @@ void lobby(StreamSocket* client, int i){
     string msg;
     //client->read(msg);
     cout<<msg << "\n";
-    string message = "aaaaa";
+    string message = "mon message";
     client->send(message);
     cout<<"asdsqfq\n";
 }
