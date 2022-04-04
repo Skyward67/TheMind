@@ -13,6 +13,7 @@ using namespace stdsock;
 
 void lobby(StreamSocket* client, int i);
 void createChannel(int nb_player, string name);
+void update(StreamSocket* client);
 
 int main(int argc, char *argv[]){
 
@@ -38,19 +39,21 @@ int main(int argc, char *argv[]){
         cout << "connexion client " << i <<"\n";
         std::thread t(lobby, client1, i);
         t.detach();
+        std::thread u(update, client1);
+        u.detach();
         i++;
     }
     return 0;
 }
 
 void lobby(StreamSocket* client, int i){
-    cout<<"client " << i << " " << client << " joined lobby \n";
-    string msg;
+    //cout<<"client " << i << " " << client << " joined lobby \n";
+    //string msg;
     //client->read(msg);
-    cout<<msg << "\n";
-    string message = "mon message";
-    client->send(message);
-    cout<<"asdsqfq\n";
+    //cout<<msg << "\n";
+    //string message = "mon message";
+    //client->send(message);
+    //cout<<"asdsqfq\n";
 }
 
 vector<string> split(string txt, char separator = ';'){
@@ -73,9 +76,11 @@ void update(StreamSocket* client){
         client->read(msg);
 
         if (msg != ""){
+            cout << "read" << endl;
             msgSplit = split(msg);
             if (msgSplit.size() > 2){
                 if (msgSplit.at(0) == "CRTE"){
+                    cout << "CRTE" << endl;
                     createChannel(stoi(msgSplit.at(1)), msgSplit.at(2));
                 }
                 else if (msg == "JOIN"){
