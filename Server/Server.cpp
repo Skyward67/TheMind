@@ -94,7 +94,8 @@ void update(StreamSocket* client){
             }
             else if (msgSplit.size() == 2){
                 if (msgSplit.at(0) == "JOIN"){
-                    string message = "LIST/";
+                    string message = "LIST";
+                    message += SEPARATOR;
                     for(auto filename : getChannels()){
                         message += filename + SEPARATOR;
                     }
@@ -115,7 +116,7 @@ string createChannel(int nb_player, string name, StreamSocket* client){
 
     if (!file){
         cout << "error in creating channel " << name << " : file not opened.";
-        return "ERRO" + SEPARATOR + "1" + SEPARATOR + "\n";
+        return string("ERRO" + SEPARATOR + '1' + SEPARATOR + '\n');
     }
 
     client->setChannelName(name);
@@ -125,7 +126,7 @@ string createChannel(int nb_player, string name, StreamSocket* client){
 
     file.close();
 
-    return "OK" + SEPARATOR + "\n";
+    return string("OK" + SEPARATOR + '\n');
 }
 
 string joinChannel(string channelName, StreamSocket* client){
@@ -142,11 +143,11 @@ string joinChannel(string channelName, StreamSocket* client){
                 nbClientCurrent++;
         }
         if(nbClientAccept == nbClientCurrent){
-            return "ERRO" + SEPARATOR + "4" + SEPARATOR + "\n"; //no client more
+            return"ERRO" + SEPARATOR + '4' + SEPARATOR + '\n'; //no client more
         }
     }
     else{
-        return "ERRO" + SEPARATOR + "1" + SEPARATOR + "\n";
+        return "ERRO" + SEPARATOR + '1' + SEPARATOR + '\n';
     }
 
     // ajout du client dans le channel
@@ -156,7 +157,7 @@ string joinChannel(string channelName, StreamSocket* client){
 
     if (!file){
         cout << "error in joining channel " << channelName << " : file doesn't exist.";
-        return "ERRO" + SEPARATOR + "1" + SEPARATOR + "\n";
+        return "ERRO" + SEPARATOR + '1' + SEPARATOR + '\n';
     }
 
     client->setChannelName(channelName);
@@ -165,7 +166,7 @@ string joinChannel(string channelName, StreamSocket* client){
 
     file.close();
 
-    return "OK" + SEPARATOR + "\n";
+    return "OK" + SEPARATOR + '\n';
 }
 
 vector<string> getChannels(){
