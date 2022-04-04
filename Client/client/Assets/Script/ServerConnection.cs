@@ -275,10 +275,17 @@ public class ServerConnection : MonoBehaviour
 
     public String ipAddress = "0.0.0.0";
     public int port = 3490;
-    public AsynchronousClient client;
+    public static AsynchronousClient client;
     
     public InputField partyName;
     public Dropdown playerNumber;
+
+    public Dropdown partyList;
+
+    private void Awake()
+    {
+        DontDestroyOnLoad(this);
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -304,18 +311,45 @@ public class ServerConnection : MonoBehaviour
 
     public void joinChannel()
     {
-
+        string toSend = "JOIN";
+        bool isResponse = false;
+        while (!isResponse)
+        {
+            if (client.getResponse() == "OK")
+            {
+                isResponse = true;
+                client.setResponse("");
+                
+            } 
+        }
     }
 
     public void createChannel()
     {
         //String sent to the server (fields separated with ";");
         string toSend = "CRTE" + ";" + playerNumber.options[playerNumber.value].text + ";" + partyName.text;
+        Debug.Log(toSend);
         client.send(toSend);
-        if (client.getResponse() == "OK")
+        bool isResponse = false;
+        while (!isResponse)
         {
-            SceneManager.LoadScene("Gaming");
+            if (client.getResponse().Split(';')[0] == "OK")
+            {
+                isResponse = true;
+                for (int i = 1; i < client.getResponse().Split(';').Length; i++)
+                {
+                    partyList.options.Add(new Dropdown.OptionData(client.getResponse().Split(';')[i]));
+                }
+                client.setResponse("");
+                //TODO start waiting room
+            } 
         }
+        
+    }
+
+    public void justToKnow()
+    {
+        client.send("test");
     }
 
 }

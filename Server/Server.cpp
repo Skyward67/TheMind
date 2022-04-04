@@ -87,7 +87,7 @@ void update(StreamSocket* client){
                     
                 }
 
-                client.send("OK");
+                client->send("OK");
             }
         }
 
