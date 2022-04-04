@@ -7,7 +7,7 @@
 using namespace std;
 using namespace stdsock;
 
-void lobby(int client, int i);
+void lobby(StreamSocket* client, int i);
 
 int main(int argc, char *argv[]){
 
@@ -31,13 +31,19 @@ int main(int argc, char *argv[]){
     while(1){
         StreamSocket *client1=server->accept();
         cout << "connexion client " << i <<"\n";
-        std::thread t(lobby, client1->getSockfd(), i);
+        std::thread t(lobby, client1, i);
         t.detach();
         i++;
     }
     return 0;
 }
 
-void lobby(int client, int i){
+void lobby(StreamSocket* client, int i){
     cout<<"client " << i << " " << client << " joined lobby \n";
+    string msg;
+    //client->read(msg);
+    cout<<msg << "\n";
+    string message = "aaaaa";
+    client->send(message);
+    cout<<"asdsqfq\n";
 }
