@@ -98,7 +98,6 @@ void update(StreamSocket* client){
                     }
                     client->send(message + "\n");
                 }
-                client->send("OK");
             }
         }
 
@@ -158,7 +157,7 @@ string joinChannel(string channelName, StreamSocket* client){
     }
 
     client->setChannelName(channelName);
-    
+
     file << client << endl;
 
     file.close();
