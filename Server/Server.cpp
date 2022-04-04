@@ -94,7 +94,7 @@ void update(StreamSocket* client){
             }
             else if (msgSplit.size() == 2){
                 if (msgSplit.at(0) == "JOIN"){
-                    string message = "LIST";
+                    string message = "LIST/";
                     for(auto filename : getChannels()){
                         message += filename + SEPARATOR;
                     }
