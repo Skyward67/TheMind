@@ -311,12 +311,14 @@ public class ServerConnection : MonoBehaviour
 
     public void joinChannel()
     {
-        string toSend = "JOIN";
+        string toSend = "JOIN;\n";
+        client.send(toSend);
         bool isResponse = false;
         while (!isResponse)
         {
             if (client.getResponse() == "OK")
             {
+                Debug.Log(client.getResponse());
                 isResponse = true;
                 client.setResponse("");
                 
@@ -333,7 +335,7 @@ public class ServerConnection : MonoBehaviour
         bool isResponse = false;
         while (!isResponse)
         {
-            if (client.getResponse().Split(';')[0] == "OK")
+            if (client.getResponse().Split(';')[0] == "LIST")
             {
                 isResponse = true;
                 for (int i = 1; i < client.getResponse().Split(';').Length; i++)

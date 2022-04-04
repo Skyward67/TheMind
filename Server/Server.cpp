@@ -87,6 +87,7 @@ void update(StreamSocket* client){
                     createChannel(stoi(msgSplit.at(1)), msgSplit.at(2), client);
                 }
                 else if (msgSplit.at(0) == "JOIN"){
+                    cout<< "sent\n";
                     joinChannel(msgSplit.at(1), client);
                 }
                 client->send("OK");
