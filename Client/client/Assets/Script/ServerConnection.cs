@@ -11,6 +11,9 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Text;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 // State object for receiving data from remote device.  
 public class StateObject
@@ -273,6 +276,9 @@ public class ServerConnection : MonoBehaviour
     public String ipAddress = "0.0.0.0";
     public int port = 3490;
     public AsynchronousClient client;
+    
+    public InputField partyName;
+    public Dropdown playerNumber;
 
     // Start is called before the first frame update
     void Start()
@@ -303,7 +309,13 @@ public class ServerConnection : MonoBehaviour
 
     public void createChannel()
     {
-
-    }    
+        //String sent to the server (fields separated with ";");
+        string toSend = "CRTE" + ";" + playerNumber.options[playerNumber.value].text + ";" + partyName.text;
+        client.send(toSend);
+        if (client.getResponse() == "OK")
+        {
+            SceneManager.LoadScene("Gaming");
+        }
+    }
 
 }

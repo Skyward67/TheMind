@@ -1646,7 +1646,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 924691745}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2042119550}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &924691745
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2864,5 +2876,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd9c43a4477cfd345b5c91ca3e73660e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ipAddress: 172.26.239.134
+  ipAddress: 172.29.82.242
   port: 3490
+  partyName: {fileID: 1469883000}
+  playerNumber: {fileID: 884138903}
