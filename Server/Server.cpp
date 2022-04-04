@@ -86,6 +86,8 @@ void update(StreamSocket* client){
                 else if (msg == "JOIN"){
                     
                 }
+
+                client.send("OK");
             }
         }
 
@@ -96,7 +98,7 @@ void update(StreamSocket* client){
 void createChannel(int nb_player, string name){
     fstream file;
 
-    file.open(name + ".txt",ios::out);
+    file.open("Channels/" + name + ".txt",ios::out);
 
     if (!file){
         cout << "error in creating channel " << name << " : file not opened.";
@@ -105,7 +107,6 @@ void createChannel(int nb_player, string name){
 
     file << name << endl;
     file << nb_player << endl;
-    file << "end";
 
     file.close();
 }
