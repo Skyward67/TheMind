@@ -15,7 +15,8 @@ using namespace std;
 using namespace stdsock;
 
 void lobby(StreamSocket* client, int i);
-void createChannel(int nb_player, string name);
+void createChannel(int nb_player, string name, StreamSocket* client);
+void joinChannel(string channelName, StreamSocket* client);
 void update(StreamSocket* client);
 vector<string> getChannels();
 
@@ -83,10 +84,10 @@ void update(StreamSocket* client){
             msgSplit = split(msg);
             if (msgSplit.size() > 2){
                 if (msgSplit.at(0) == "CRTE"){
-                    createChannel(stoi(msgSplit.at(1)), msgSplit.at(2));
+                    createChannel(stoi(msgSplit.at(1)), msgSplit.at(2), client);
                 }
                 else if (msgSplit.at(0) == "JOIN"){
-                    
+                    joinChannel(msgSplit.at(1), client);
                 }
                 client->send("OK");
             }
@@ -105,7 +106,7 @@ void update(StreamSocket* client){
     }
 }
 
-void createChannel(int nb_player, string name){
+void createChannel(int nb_player, string name, StreamSocket* client){
     fstream file;
 
     file.open("Channels/" + name + ".txt",ios::out);
@@ -117,6 +118,22 @@ void createChannel(int nb_player, string name){
 
     file << name << endl;
     file << nb_player << endl;
+    file << client << endl;
+
+    file.close();
+}
+
+void joinChannel(string channelName, StreamSocket* client){
+    fstream file;
+
+    file.open("Channels/" + channelName + ".txt",ios::app);
+
+    if (!file){
+        cout << "error in joining channel " << channelName << " : file doesn't exist.";
+        return ;
+    }
+
+    file << client << endl;
 
     file.close();
 }
