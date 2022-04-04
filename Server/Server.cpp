@@ -5,6 +5,9 @@
 #include <sstream>
 #include <fstream>
 
+#include <stdio.h>
+#include <dirent.h>
+
 #include <sys/time.h>
 #include "Socket.h"
 
@@ -14,6 +17,7 @@ using namespace stdsock;
 void lobby(StreamSocket* client, int i);
 void createChannel(int nb_player, string name);
 void update(StreamSocket* client);
+vector<string> getChannels();
 
 int main(int argc, char *argv[]){
 
@@ -76,18 +80,24 @@ void update(StreamSocket* client){
         client->read(msg);
 
         if (msg != ""){
-            cout << "read" << endl;
             msgSplit = split(msg);
             if (msgSplit.size() > 2){
                 if (msgSplit.at(0) == "CRTE"){
-                    cout << "CRTE" << endl;
                     createChannel(stoi(msgSplit.at(1)), msgSplit.at(2));
                 }
-                else if (msg == "JOIN"){
+                else if (msgSplit.at(0) == "JOIN"){
                     
                 }
-
-                client.send("OK");
+                client->send("OK");
+            }
+            else if (msgSplit.size() == 2){
+                if (msgSplit.at(0) == "JOIN"){
+                    string message = "LIST;";
+                    for(auto filename : getChannels()){
+                        message += filename + ";";
+                    }
+                    client->send(message + "\n");
+                }
             }
         }
 
@@ -109,4 +119,24 @@ void createChannel(int nb_player, string name){
     file << nb_player << endl;
 
     file.close();
+}
+
+vector<string> getChannels(){
+    vector<string> output;
+    
+    DIR *d;
+    struct dirent *dir;
+    d = opendir("Channels/");
+    if(d){
+        string currentfile = "";
+        while((dir = readdir(d)) != NULL){
+            currentfile = split(dir->d_name,'.').at(0);
+            if (currentfile.compare("") != 0){
+                output.push_back(currentfile);
+            }
+        }
+        closedir(d);
+    }
+
+    return output;
 }
