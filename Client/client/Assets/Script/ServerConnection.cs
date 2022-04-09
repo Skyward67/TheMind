@@ -67,7 +67,7 @@ public class AsynchronousClient
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.ToString());
+            Debug.LogException(e);
         }
     }
 
@@ -115,11 +115,11 @@ public class AsynchronousClient
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.ToString());
+            Debug.LogException(e);
         }
     }
     */
-    
+
 
     public void deleteClient()
     {
@@ -130,7 +130,7 @@ public class AsynchronousClient
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.ToString());
+            Debug.LogException(e);
         }
     }
 
@@ -152,7 +152,7 @@ public class AsynchronousClient
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.ToString());
+            Debug.LogException(e);
         }
     }
 
@@ -170,7 +170,7 @@ public class AsynchronousClient
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.ToString());
+            Debug.LogException(e);
         }
     }
 
@@ -178,7 +178,6 @@ public class AsynchronousClient
     {
         try
         {
-            
             // Retrieve the state object and the client socket
             // from the asynchronous state object.  
             StateObject state = (StateObject)ar.AsyncState;
@@ -193,7 +192,7 @@ public class AsynchronousClient
                 state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
                 
                 // Get the rest of the data.  
-                if (bytesRead < 5)
+                if (bytesRead < 1024)
                 {
                     // All the data has arrived; put it in response.  
                     if (state.sb.Length > 1)
@@ -223,7 +222,7 @@ public class AsynchronousClient
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.ToString());
+            Debug.LogException(e);
         }
         
         
@@ -255,7 +254,7 @@ public class AsynchronousClient
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.ToString());
+            Debug.LogException(e);
         }
     }
 
@@ -300,6 +299,19 @@ public class ServerConnection : MonoBehaviour
         if (client.getResponse() != "")
         {
             Debug.Log(client.getResponse());
+
+            // answer to the "JOIN;" message send to server
+            if (client.getResponse().Split(';')[0] == "LIST")
+            {
+                if (client.getResponse().Split(';').Length > 2)
+                {
+                    partyList.ClearOptions();
+                    for (int i = 1; i < client.getResponse().Split(';').Length - 1; i++)
+                    {
+                        partyList.options.Add(new Dropdown.OptionData(client.getResponse().Split(';')[i]));
+                    }
+                }
+            }
         }
         client.setResponse("");
     }
@@ -309,46 +321,62 @@ public class ServerConnection : MonoBehaviour
         client.deleteClient();   
     }
 
+    public void getList()
+    {
+        client.send("JOIN;\n");
+    }
+
     public void joinChannel()
     {
-        string toSend = "JOIN;\n";
+        String toSend = "JOIN;";
+
+        toSend += partyList.options[partyList.value].text + ";\n";
+        Debug.Log(toSend);
+
         client.send(toSend);
+        /*
+
         bool isResponse = false;
-        Debug.Log(client.getResponse().ToString());
-        /*while (!isResponse)
+        while (!isResponse)
         {
-            if (client.getResponse().Split(';')[0] == "LIST")
+            if (client.getResponse().Contains("OK"))
             {
                 isResponse = true;
-                if (client.getResponse().Split(';').Length > 2)
-                {
-                    for (int i = 1; i < client.getResponse().Split(';').Length; i++)
-                    {
-                        partyList.options.Add(new Dropdown.OptionData(client.getResponse().Split(';')[i]));
-                    }
-                }
                 client.setResponse("");
-            } 
-        }*/
+                //TODO start waiting room
+            }
+            else if (client.getResponse().Contains("ERRO"))
+            {
+                isResponse = true;
+                client.setResponse("");
+                //TODO error
+            }
+        }
+        */
     }
 
     public void createChannel()
     {
         //String sent to the server (fields separated with ";");
-        string toSend = "CRTE" + ";" + playerNumber.options[playerNumber.value].text + ";" + partyName.text;
+        String toSend = "CRTE" + ";" + playerNumber.options[playerNumber.value].text + ";" + partyName.text + ";\n";
         Debug.Log(toSend);
         client.send(toSend);
         bool isResponse = false;
         while (!isResponse)
         {
-            if (client.getResponse() == "OK")
+            if (client.getResponse().Contains("OK"))
             {
                 isResponse = true;
                 client.setResponse("");
                 //TODO start waiting room
-            } 
+            }
+            else if (client.getResponse().Contains("ERRO"))
+            {
+                isResponse = true;
+                client.setResponse("");
+                //TODO error
+            }
         }
-        
     }
 
     public void justToKnow()

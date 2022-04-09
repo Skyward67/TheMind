@@ -1,5 +1,3 @@
-#define SEPARATOR '/'
-
 #include <iostream>
 #include <thread>
 #include <string>
@@ -15,6 +13,8 @@
 
 using namespace std;
 using namespace stdsock;
+
+const string SEPARATOR = ";";
 
 void lobby(StreamSocket* client, int i);
 string createChannel(int nb_player, string name, StreamSocket* client);
@@ -58,12 +58,13 @@ void lobby(StreamSocket* client, int i){
     //string msg;
     //client->read(msg);
     //cout<<msg << "\n";
-    //string message = "mon message";
-    //client->send(message);
+    string message = "mon message";
+    client->send(message);
+    cout << message << endl;
     //cout<<"asdsqfq\n";
 }
 
-vector<string> split(string txt, char separator = SEPARATOR){
+vector<string> split(string txt, char separator = SEPARATOR[0]){
     vector<string> output;
     stringstream streamData(txt);
 
@@ -116,7 +117,7 @@ string createChannel(int nb_player, string name, StreamSocket* client){
 
     if (!file){
         cout << "error in creating channel " << name << " : file not opened.";
-        return string("ERRO" + SEPARATOR + '1' + SEPARATOR + '\n');
+        return "ERRO" + SEPARATOR + "1" + SEPARATOR + "\n";
     }
 
     client->setChannelName(name);
@@ -126,7 +127,7 @@ string createChannel(int nb_player, string name, StreamSocket* client){
 
     file.close();
 
-    return string("OK" + SEPARATOR + '\n');
+    return "OK" + SEPARATOR + "\n";
 }
 
 string joinChannel(string channelName, StreamSocket* client){
@@ -143,11 +144,11 @@ string joinChannel(string channelName, StreamSocket* client){
                 nbClientCurrent++;
         }
         if(nbClientAccept == nbClientCurrent){
-            return"ERRO" + SEPARATOR + '4' + SEPARATOR + '\n'; //no client more
+            return"ERRO" + SEPARATOR + "4" + SEPARATOR + "\n"; //no client more
         }
     }
     else{
-        return "ERRO" + SEPARATOR + '1' + SEPARATOR + '\n';
+        return "ERRO" + SEPARATOR + "1" + SEPARATOR + "\n";
     }
 
     // ajout du client dans le channel
@@ -157,7 +158,7 @@ string joinChannel(string channelName, StreamSocket* client){
 
     if (!file){
         cout << "error in joining channel " << channelName << " : file doesn't exist.";
-        return "ERRO" + SEPARATOR + '1' + SEPARATOR + '\n';
+        return "ERRO" + SEPARATOR + "1" + SEPARATOR + "\n";
     }
 
     client->setChannelName(channelName);
@@ -166,7 +167,7 @@ string joinChannel(string channelName, StreamSocket* client){
 
     file.close();
 
-    return "OK" + SEPARATOR + '\n';
+    return "OK" + SEPARATOR + "\n";
 }
 
 vector<string> getChannels(){
